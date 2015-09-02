@@ -90,7 +90,7 @@ class command extends WP_CLI_Command {
 					}
 				}
 			} else {
-				$this->log('Site is OK');
+				WP_CLI::success( "Site is OK!" );
 			}
 
 			$this->br();
