@@ -18,7 +18,7 @@ class MyCustomCheck extends InvalidHTML
 
 Otherwise you should use;
 ```
-class implement  extends checks
+class MyCustomCheck extends checks
 {
 ```
 
