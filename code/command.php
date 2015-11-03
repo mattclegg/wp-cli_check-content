@@ -50,11 +50,15 @@ class command extends CommandWithDBObject {
 	public function __invoke($args = array(), $assoc_args = array())
 	{
 
-		if (array_key_exists('format', $assoc_args) && $assoc_args['format']='html') {
-			$this->inHTML = true;
+		if (array_key_exists('format', $assoc_args)) {
+			if ($assoc_args['format']='html') {
+				$this->inHTML = true;
+			} else {
+				// <br/>
+				$this->br();
+			}
 		} else {
-			// <br/>
-			$this->br();
+			$this->inHTML = true;
 		}
 
 		// Check for nocolor parameter
