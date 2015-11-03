@@ -8,10 +8,14 @@ namespace WP_CLI\CheckContent;
  * Creates a wrapper for a WPSite to cache general site information & any errors found from checks.
  *
  */
-class wpsite
-{
+class wpsite {
 
 	private $checks_to_ignore = array();
+
+	/**
+	 * Should the output be in HTML?
+	 */
+	protected $inHTML = false;
 
 	private $data = array();
 
@@ -22,13 +26,15 @@ class wpsite
 	 * @param $blog_id
 	 * @param $site_id
 	 */
-	function __construct($blog_id, $site_id, $checks_to_ignore = null) {
+	function __construct($blog_id, $site_id, $checks_to_ignore = null, $inHTML = false) {
 		$this->blog_id = $blog_id;
 		$this->site_id = $site_id;
 
 		foreach ( explode(",", $checks_to_ignore) as $_ignore) {
 			$this->checks_to_ignore[] = strtolower($_ignore);
 		}
+
+		$this->inHTML = $inHTML;
 	}
 
 	public function __get($name) {
@@ -103,6 +109,7 @@ class wpsite
 		$results = array();
 
 		$checks = $this->load_checks();
+		$bootstap_button = "color: #fff;padding: 6px 12px;text-decoration: none;font-size: 14px;font-weight: 400;text-align: center;border-radius: 4px;";
 
 		// Loop through every post for the current blog
 		foreach(get_posts(array(
@@ -126,37 +133,57 @@ class wpsite
 						(! isset($results[$post->ID])) ||
 						(is_array($results[$post->ID]) && count($results[$post->ID]) === 0)
 					) {
-						$results[$post->ID] = $check::run($content);
+						$_result = $check::run($content);
+						if( count( $_result ) ) {
+							$_post = get_post( $post->ID );
+							$results[$post->ID] = array(
+								'title' => array(
+									"Error with page: " . $_post->post_title,
+									sprintf(
+										"<a href='%s' style='%s'>View</a>&nbsp;||&nbsp;<a href='%s' style='%s'>Edit</a>",
+										str_replace('https://','http://', get_permalink($_post->ID)),
+										"background-color: #337ab7;border: 1px solid #2e6da4;" . $bootstap_button,
+										sprintf('%s/post.php?post=%d&action=edit', $this->LinkAdmin(), $_post->ID),
+										"background-color: #eea236;border: 1px solid #f0ad4e;" . $bootstap_button
+									)
+								),
+								'results' => $_result
+							);
+						}
 					}
 				}
 			}
 		}
 
-		//Add useful information for any posts with errors
-		foreach ($results as $_id => $result) {
-			if(count($result)) {
-				$_post = get_post( $_id );
-				array_unshift(
-					$results[$_id],
-					array(
-						'Error with content on page',
-						$_post->post_title,
-						'%_'
-					),
-					array(
-						'View link',
-						str_replace('https://','http://', get_permalink($_post->ID)),
-						'%g'
-					),
-					array(
-						'Edit link',
-						sprintf('%s/post.php?post=%d&action=edit', $this->LinkAdmin(), $_post->ID),
-						'%g'
-					)
-				);
-			}
-		}
-		return array_filter($results);
+//		//Add useful information for any posts with errors
+//		foreach ($results as $_id => $result) {
+//			if(count($result)) {
+//
+//				if( $this->inHTML ) {
+//
+//				} else {
+//					array_unshift(
+//						$results[$_id],
+//						array(
+//							'Error with content on page',
+//							$_post->post_title,
+//							'%_'
+//						),
+//						array(
+//							'View link',
+//							str_replace('https://','http://', get_permalink($_post->ID)),
+//							'%g'
+//						),
+//						array(
+//							'Edit link',
+//							sprintf('%s/post.php?post=%d&action=edit', $this->LinkAdmin(), $_post->ID),
+//							'%g'
+//						)
+//					);
+//				}
+//			}
+//		}
+		return $results;
 	}
 
 	/**

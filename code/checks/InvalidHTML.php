@@ -33,8 +33,7 @@ class InvalidHTML implements checks
 						"DOMDocument::loadHTML() [<a href='http://www.php.net/domdocument.loadhtml'>domdocument.loadhtml</a>]: ",
 						'',
 						$error[1]
-					),
-					'%R'
+					)
 				);
 			}
 		}

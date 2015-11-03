@@ -29,8 +29,7 @@ class ThirdPartyImages extends InvalidHTML
 				foreach ( $_urls as $_url ) {
 					$results[] = array(
 						'3rd Party Image',
-						$_url,
-						'%M'
+						$_url
 					);
 				}
 			}
