@@ -15,12 +15,20 @@ error_reporting(E_ALL);
  */
 class InvalidHTML implements checks
 {
+	static public function get_content($_post) {
+		// Apply any content filters to post_content
+		return str_replace(']]>', ']]&gt;', apply_filters('the_content', $_post->post_content));
+	}
+
+
 	/**
 	 * @param $content
 	 *
 	 * @return array of errors
 	 */
-	static public function run($content) {
+	static public function run($_post) {
+
+		$content = self::get_content($_post);
 
 		$results = array();
 		list($DOM, $ErrorHandler) = self::validate_content($content);
@@ -35,6 +43,9 @@ class InvalidHTML implements checks
 						$error[1]
 					)
 				);
+
+
+
 			}
 		}
 

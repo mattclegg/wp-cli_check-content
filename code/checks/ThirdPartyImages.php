@@ -10,7 +10,9 @@ use WP_CLI\CheckContent\checks;
 class ThirdPartyImages extends InvalidHTML
 {
 
-	static public function run($content) {
+	static public function run($_post) {
+
+		$content = self::get_content($_post);
 
 		$results = array();
 		list($DOM, $ErrorHandler) = self::validate_content($content);

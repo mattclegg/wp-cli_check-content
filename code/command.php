@@ -73,13 +73,6 @@ class command extends CommandWithDBObject {
 			$this->check();
 		}
 
-		// Check for exclude parameters
-		if (array_key_exists('exclude', $assoc_args)) {
-			$this->check( $assoc_args['exclude'] );
-		} else {
-			$this->check();
-		}
-
 		WP_CLI::log(PHP_EOL);
 	}
 
@@ -181,11 +174,16 @@ class command extends CommandWithDBObject {
 
 			$css = $this->default_style . $custom_css;
 
-			$str .= sprintf(
-				'<%3$s%1$s%2$s>',
-				$node,
-				sprintf(" style='%s'",  $css),
-				($open) ? "" : "/"
+			$str .= vsprintf(
+				'<%1$s%2$s>' . PHP_EOL,
+				($open) ?
+					array(
+						$node,
+						 sprintf(" style='%s'",  $css)
+					)
+				: array(
+					"/", $node
+				)
 			);
 		}
 		return $str;

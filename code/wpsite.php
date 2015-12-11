@@ -122,34 +122,29 @@ class wpsite {
 			$_post = get_post($post->ID);
 			$_curr_urls = array();
 
-			// Apply any content filters to post_content
-			$content = str_replace(']]>', ']]&gt;', apply_filters('the_content', $_post->post_content));
+			foreach($checks as $check) {
 
-			if( $content) {
-				foreach($checks as $check) {
-
-					//Only continue checking if no errors found
-					if(
-						(! isset($results[$post->ID])) ||
-						(is_array($results[$post->ID]) && count($results[$post->ID]) === 0)
-					) {
-						$_result = $check::run($content);
-						if( count( $_result ) ) {
-							$_post = get_post( $post->ID );
-							$results[$post->ID] = array(
-								'title' => array(
-									"Error with page: " . $_post->post_title,
-									sprintf(
-										"<a href='%s' style='%s'>View</a>&nbsp;||&nbsp;<a href='%s' style='%s'>Edit</a>",
-										str_replace('https://','http://', get_permalink($_post->ID)),
-										"background-color: #337ab7;border: 1px solid #2e6da4;" . $bootstap_button,
-										sprintf('%s/post.php?post=%d&action=edit', $this->LinkAdmin(), $_post->ID),
-										"background-color: #eea236;border: 1px solid #f0ad4e;" . $bootstap_button
-									)
-								),
-								'results' => $_result
-							);
-						}
+				//Only continue checking if no errors found
+				if(
+					(! isset($results[$post->ID])) ||
+					(is_array($results[$post->ID]) && count($results[$post->ID]) === 0)
+				) {
+					$_result = $check::run( $_post );
+					if( count( $_result ) ) {
+						$_post = get_post( $post->ID );
+						$results[$post->ID] = array(
+							'title' => array(
+								"Error with page: " . $_post->post_title,
+								sprintf(
+									"<a href='%s' style='%s'>View</a>&nbsp;||&nbsp;<a href='%s' style='%s'>Edit</a>",
+									str_replace('https://','http://', get_permalink($_post->ID)),
+									"background-color: #337ab7;border: 1px solid #2e6da4;" . $bootstap_button,
+									sprintf('%s/post.php?post=%d&action=edit', $this->LinkAdmin(), $_post->ID),
+									"background-color: #eea236;border: 1px solid #f0ad4e;" . $bootstap_button
+								)
+							),
+							'results' => $_result
+						);
 					}
 				}
 			}
