@@ -47,8 +47,7 @@ class command extends CommandWithDBObject {
 	 *
 	 * @synopsis [--nocolor] [--exclude=<option>] [--format=<option>]
 	 */
-	public function __invoke($args = array(), $assoc_args = array())
-	{
+	public function __invoke($args = array(), $assoc_args = array()) {
 
 		if (array_key_exists('format', $assoc_args)) {
 			if ($assoc_args['format']='html') {
@@ -80,8 +79,7 @@ class command extends CommandWithDBObject {
 	/**
 	 * Output results from check(s)
 	 */
-	protected function check($ignore = null)
-	{
+	protected function check($ignore = null) {
 
 		$this->log('Check content in WP', null,   '%Y');
 
@@ -92,6 +90,8 @@ class command extends CommandWithDBObject {
 
 			// Output title of current site
 			$this->log($site);
+
+			$site->set_curr();
 
 			// Check for errors (invokes cache)
 			if ($site->has_errors()) {
@@ -112,8 +112,7 @@ class command extends CommandWithDBObject {
 	 * List of all sites available in the current install
 	 * @return array
 	 */
-	protected function site_list($ignore = null)
-	{
+	protected function site_list($ignore = null) {
 		$sites = array();
 
 		if ( is_multisite() ) {
@@ -130,7 +129,11 @@ class command extends CommandWithDBObject {
 				) )
 					as $site
 				) {
-					$sites[] = new wpsite( $site["blog_id"], $site["site_id"], $ignore, $this->inHTML );
+
+					$wpsite = new wpsite( $site["blog_id"], $site["site_id"], $ignore, $this->inHTML );
+
+					$sites[] = $wpsite;
+
 				}
 			} else {
 				// See: wp_get_sites();
@@ -201,7 +204,18 @@ class command extends CommandWithDBObject {
 		}
 	}
 
-	protected function table_log($errors){
+	function string_to_ascii($string) {
+		$ascii = "";
+
+		for ($i = 0; $i < strlen($string); $i++)
+		{
+			$ascii += ord($string[$i]);
+		}
+
+		return $ascii;
+	}
+
+	protected function table_log($errors) {
 
 		if($this->inHTML) {
 
@@ -240,8 +254,6 @@ class command extends CommandWithDBObject {
 			foreach ($errors['results'] as $i => $error) {
 				$this->log($error[0], $error[1], "%C");
 			}
-
-
 		}
 	}
 
@@ -249,8 +261,7 @@ class command extends CommandWithDBObject {
 	/**
 	 * Output a colorized & formatted string
 	 */
-	protected function log($label, $value = null, $color = '%C')
-	{
+	protected function log($label, $value = null, $color = '%C') {
 		if($this->inHTML) {
 
 			switch($color) {
@@ -263,10 +274,8 @@ class command extends CommandWithDBObject {
 				default:
 					$path = "p";
 			}
-
 			echo $this->f_enclosed($path, $label);
 			echo $this->f_enclosed($path, $value);
-
 
 		} else {
 			if ($value) {

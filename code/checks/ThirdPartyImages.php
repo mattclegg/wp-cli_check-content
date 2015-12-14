@@ -12,15 +12,18 @@ class ThirdPartyImages extends InvalidHTML
 
 	static public function run($_post) {
 
-		$content = self::get_content($_post);
+		$results = parent::run($_post);
 
-		$results = array();
+		$content = self::get_content($_post);
 		list($DOM, $ErrorHandler) = self::validate_content($content);
 
-		if ( $ErrorHandler->ok()) {
+
+		if ( $ErrorHandler->ok() ) {
 			$_urls = array();
+
 			foreach ( $DOM->getElementsByTagName( 'img' ) as $image ) {
 				$image_src = $image->getAttribute( 'src' );
+
 				if ( ( 0 === strpos( $image_src, 'http' ) ) && ( ! strpos( $image_src, get_current_site()->domain ) ) ) {
 					$_curr_urls [] = $image_src;
 					$_urls[]       = $image_src;
@@ -36,7 +39,6 @@ class ThirdPartyImages extends InvalidHTML
 				}
 			}
 		}
-
 		return $results;
 	}
 

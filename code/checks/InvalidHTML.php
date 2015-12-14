@@ -13,12 +13,19 @@ error_reporting(E_ALL);
  *
  * @package WP_CLI\CheckContent\checks
  */
-class InvalidHTML implements checks
-{
+class InvalidHTML implements checks {
+
 	static public function get_content($_post) {
-		// Apply any content filters to post_content
-		return str_replace(']]>', ']]&gt;', apply_filters('the_content', $_post->post_content));
+		/**
+		 * Filter the post content.
+		 *
+		 * @since 0.71
+		 *
+		 * @param string $content Content of the current post.
+		 */
+		return str_replace( ']]>', ']]&gt;', apply_filters( 'the_content', $_post->post_content ) );
 	}
+
 
 
 	/**
@@ -28,10 +35,10 @@ class InvalidHTML implements checks
 	 */
 	static public function run($_post) {
 
-		$content = self::get_content($_post);
-
 		$results = array();
-		list($DOM, $ErrorHandler) = self::validate_content($content);
+
+		$content = self::get_content($_post);
+		list($DOM, $ErrorHandler) = self::validate_content( $content );
 
 		if ( ! $ErrorHandler->ok()) {
 			foreach ($ErrorHandler->errors() as $error) {
@@ -41,16 +48,14 @@ class InvalidHTML implements checks
 						"DOMDocument::loadHTML() [<a href='http://www.php.net/domdocument.loadhtml'>domdocument.loadhtml</a>]: ",
 						'',
 						$error[1]
-					)
+					) . "<textarea>{$content}</textarea>"
 				);
-
-
-
 			}
 		}
-
 		return $results;
 	}
+
+
 
 	static public function validate_content($content) {
 		$DOM = new DOMDocument();
@@ -58,7 +63,6 @@ class InvalidHTML implements checks
 		$ErrorHandler->call($content);
 		return array($DOM, $ErrorHandler);
 	}
-
 }
 
 /**
@@ -69,8 +73,7 @@ class InvalidHTML implements checks
  *
  * @package WP_CLI\CheckContent\checks
  */
-class InvalidHTML_ErrorTrap
-{
+class InvalidHTML_ErrorTrap {
 
 	protected $callback;
 	protected $errors = array();
@@ -78,6 +81,8 @@ class InvalidHTML_ErrorTrap
 	function __construct($callback) {
 		$this->callback = $callback;
 	}
+
+
 
 	function call() {
 		$result = null;
@@ -92,13 +97,19 @@ class InvalidHTML_ErrorTrap
 		return $result;
 	}
 
+
+
 	function onError($errno, $errstr, $errfile, $errline) {
 		$this->errors[] = array($errno, $errstr, $errfile, $errline);
 	}
 
+
+
 	function ok() {
 		return count($this->errors) === 0;
 	}
+
+
 
 	function errors() {
 		return $this->errors;

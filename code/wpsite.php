@@ -42,10 +42,7 @@ class wpsite {
 			return $this->data[$name];
 		}
 
-		// Make sure wp is looking at the right blog for this 'WPCLI_Plugin_CheckContent__site'
-		global $wpdb;
-		switch_to_blog( $this->blog_id );
-		$wpdb->set_blog_id( $this->blog_id );
+		$this->set_curr();
 
 		// Return cached values
 		switch ($name) {
@@ -55,6 +52,9 @@ class wpsite {
 			case 'link':
 				// Link to the homepage
 				return $this->data[$name] = get_blog_details( $this->blog_id )->siteurl;
+			case 'plugins':
+				$plugins = wp_get_active_and_valid_plugins();
+				return $plugins;
 			case 'errors':
 				// This can take a while depending on the size of the site.
 				return $this->data[$name] = $this->_errors();
@@ -76,6 +76,25 @@ class wpsite {
 	 */
 	function __toString() {
 		return $this->title;
+	}
+
+
+	public function set_curr() {
+		// Make sure wp is looking at the right blog for this 'WPCLI_Plugin_CheckContent__site'
+		global $wpdb;
+		switch_to_blog( $this->blog_id );
+		$wpdb->set_blog_id( $this->blog_id );
+
+		$symlinked_plugins_supported = function_exists( 'wp_register_plugin_realpath' );
+		foreach ( wp_get_active_and_valid_plugins() as $plugin ) {
+			if ( !\WP_CLI\Utils\is_plugin_skipped( $plugin ) ) {
+				if ( $symlinked_plugins_supported ) {
+					wp_register_plugin_realpath( $plugin );
+				}
+				include_once( $plugin );
+			}
+		}
+		do_action( 'plugins_loaded' );
 	}
 
 	/**
@@ -129,6 +148,7 @@ class wpsite {
 					(! isset($results[$post->ID])) ||
 					(is_array($results[$post->ID]) && count($results[$post->ID]) === 0)
 				) {
+
 					$_result = $check::run( $_post );
 					if( count( $_result ) ) {
 						$_post = get_post( $post->ID );
