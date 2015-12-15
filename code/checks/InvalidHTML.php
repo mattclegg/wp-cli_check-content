@@ -5,9 +5,6 @@ namespace WP_CLI\CheckContent\checks;
 use WP_CLI\CheckContent\checks;
 use DOMDocument;
 
-//Required for catching errors in parsing HTML
-error_reporting(E_ALL);
-
 /**
  * Checks $content for Invalid HTML
  *
@@ -16,6 +13,9 @@ error_reporting(E_ALL);
 class InvalidHTML implements checks {
 
 	static public function get_content($_post) {
+
+		$GLOBALS['post'] = $_post;
+
 		/**
 		 * Filter the post content.
 		 *
