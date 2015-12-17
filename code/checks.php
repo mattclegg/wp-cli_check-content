@@ -4,8 +4,6 @@ namespace WP_CLI\CheckContent;
 
 interface checks {
 
-	public $category = 'info';
-
 	/**
 	 * Implement this method in the check subclass to
 	 * execute via WP-CLI

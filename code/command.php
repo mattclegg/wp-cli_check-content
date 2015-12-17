@@ -172,7 +172,7 @@ class command extends CommandWithDBObject {
 	);
 
 	function colour($name) {
-		return self::$colours[$name];
+		return $this->colours[$name];
 	}
 
 	protected function f($path, $open = true, $custom_css = "") {

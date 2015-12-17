@@ -10,7 +10,7 @@ use WP_CLI\CheckContent\checks;
 class NonHTTPSThirdPartyImages extends ThirdPartyImages
 {
 
-	public $category = 'warning';
+	public static $category = 'warning';
 
 	static public function run($_post) {
 

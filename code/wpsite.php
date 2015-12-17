@@ -164,7 +164,7 @@ class wpsite {
 								)
 							),
 							'results' => $_result,
-							'category' => $check->category
+							'category' => $check::category
 						);
 					}
 				}

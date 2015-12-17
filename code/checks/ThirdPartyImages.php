@@ -10,7 +10,7 @@ use WP_CLI\CheckContent\checks;
 class ThirdPartyImages extends InvalidHTML
 {
 
-	public $category = 'info';
+	public static $category = 'info';
 
 	static public function run($_post) {
 
@@ -30,6 +30,9 @@ class ThirdPartyImages extends InvalidHTML
 					( 0 === strpos( $image_src, 'http' ) ) // Starts with HTTP
 					&& ( ! strpos( $image_src, get_current_site()->domain ) ) //Is a 3rd party domain
 				) {
+					$_curr_urls [] = $image_src;
+					$_urls[]       = $image_src;
+				}
 			}
 
 			if ( count( $_urls ) ) {

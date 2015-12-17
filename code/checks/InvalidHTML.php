@@ -3,6 +3,7 @@
 namespace WP_CLI\CheckContent\checks;
 
 use WP_CLI\CheckContent\checks;
+use WP_CLI\CheckContent\checks_default;
 use DOMDocument;
 
 /**
@@ -10,9 +11,9 @@ use DOMDocument;
  *
  * @package WP_CLI\CheckContent\checks
  */
-class InvalidHTML implements checks {
+class InvalidHTML extends checks_default implements checks {
 
-	public $category = 'danger';
+	public static $category = 'danger';
 
 	static public function get_content($_post) {
 
