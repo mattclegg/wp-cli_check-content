@@ -12,6 +12,8 @@ use DOMDocument;
  */
 class InvalidHTML implements checks {
 
+	public $category = 'danger';
+
 	static public function get_content($_post) {
 
 		$GLOBALS['post'] = $_post;
@@ -48,7 +50,8 @@ class InvalidHTML implements checks {
 						"DOMDocument::loadHTML() [<a href='http://www.php.net/domdocument.loadhtml'>domdocument.loadhtml</a>]: ",
 						'',
 						$error[1]
-					) . "<textarea>{$content}</textarea>"
+					),
+					"<textarea>{$content}</textarea>"
 				);
 			}
 		}

@@ -150,10 +150,10 @@ class command extends CommandWithDBObject {
 
 	protected $style = array(
 		'h1'			=> "font-size: 36px;font-weight: 500;line-height: 1.1;",
-		'h2'			=> "font-size: 30px;font-weight: 500;line-height: 1.1;",
 		'h2'			=> "font-size: 24px;font-weight: 500;line-height: 1.1;",
-		'h2'			=> "font-size: 18px;font-weight: 500;line-height: 1.1;",
-		'strong'		=> "font-weight: 700;",
+		'h3'			=> "font-size: 19px;font-weight: 500;line-height: 1.1;",
+		'h4'			=> "font-size: 14px;font-weight: 500;line-height: 1.1;",
+		'strong'		=> "font-size: 14px;font-weight: 700;",
 		'caption'		=> "color: #777;padding-top: 8px;padding-bottom: 8px;text-align: left;",
 		'table'			=> "border-spacing: 0;border-collapse: collapse;",
 		'tr'			=> "display: table-row;",
@@ -163,6 +163,17 @@ class command extends CommandWithDBObject {
 		'table.tr.td'	=> "border-top: 1px solid #ddd;",
 		'panel.success' => "color: #3c763d;background-color: #dff0d8;border-color: #d6e9c6;border-radius: 4px;padding: 15px;"
 	);
+
+	protected $colours = array(
+		'success'		=> "#dff0d8",
+		'info'			=> "#d9edf7",
+		'warning'		=> "#fcf8e3",
+		'danger'		=> "#f2dede"
+	);
+
+	function colour($name) {
+		return self::$colours[$name];
+	}
 
 	protected function f($path, $open = true, $custom_css = "") {
 
@@ -226,13 +237,15 @@ class command extends CommandWithDBObject {
 
 			echo $this->f('tr.td');
 
-			echo $this->f('div', true, "border: 1px #ddd solid;border-radius: 4px 4px 0 0;margin-top: 5px;padding: 0 15px 15px;");
+
+
+			echo $this->f('div', true, "background:{$this->colour($errors['category'])};border: 1px #ddd solid;border-radius: 4px 4px 0 0;margin-top: 5px;padding: 0 5px 5px;");
 
 			echo $this->f('table');
 			//echo $this->f_enclosed('caption', "The following errors will need resolving.");
 
 			echo $this->f('tr');
-			foreach (array("#", "Description", "Details") as $title) {
+			foreach (array("#", "Category", "Summary", "DEBUG details") as $title) {
 				echo $this->f_enclosed('th', $title);
 			}
 			echo $this->f('tr', false);
@@ -242,6 +255,7 @@ class command extends CommandWithDBObject {
 				echo $this->f_enclosed('td', $i + 1, $this->style['table.tr.td']);
 				echo $this->f_enclosed('td', $this->f_enclosed('strong', $error[0]), $this->style['table.tr.td']);
 				echo $this->f_enclosed('td', $error[1], $this->style['table.tr.td']);
+				echo $this->f_enclosed('td', $error[2], $this->style['table.tr.td']);
 				echo $this->f('tr', false);
 			}
 

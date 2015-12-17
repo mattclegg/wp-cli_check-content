@@ -163,7 +163,8 @@ class wpsite {
 									"background-color: #eea236;border: 1px solid #f0ad4e;" . $bootstap_button
 								)
 							),
-							'results' => $_result
+							'results' => $_result,
+							'category' => $check->category
 						);
 					}
 				}
