@@ -7,7 +7,7 @@ use WP_CLI\CheckContent\checks;
 /**
  * Checks for ThirdPartyImages in content
  */
-class NonHTTPSThirdPartyImages extends ThirdPartyImages
+class check_03_NonHTTPSThirdPartyImages extends check_02_ThirdPartyImages
 {
 
 	public static $category = 'warning';
@@ -46,6 +46,7 @@ class NonHTTPSThirdPartyImages extends ThirdPartyImages
 				}
 			}
 		}
+
 		return $results;
 	}
 }

@@ -7,7 +7,7 @@ use WP_CLI\CheckContent\checks;
 /**
  * Checks for ThirdPartyImages in content
  */
-class ThirdPartyImages extends InvalidHTML
+class check_02_ThirdPartyImages extends check_01_InvalidHTML
 {
 
 	public static $category = 'info';
@@ -21,6 +21,7 @@ class ThirdPartyImages extends InvalidHTML
 
 
 		if ( $ErrorHandler->ok() ) {
+
 			$_urls = array();
 
 			foreach ( $DOM->getElementsByTagName( 'img' ) as $image ) {

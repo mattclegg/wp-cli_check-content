@@ -102,7 +102,7 @@ class wpsite {
 	 * @return int|boolean
 	 */
 	function has_errors() {
-		return count($this->errors);
+		return count($this->_errors());
 	}
 
 	/**
@@ -112,12 +112,12 @@ class wpsite {
 	function load_checks() {
 		$checks = array();
 		foreach (glob(realpath(dirname(__FILE__)) . "/checks/" . "*.php") as $check) {
-
 			$class = pathinfo($check, PATHINFO_FILENAME);
 			if(!in_array(strtolower($class), $this->checks_to_ignore)) {
 				$checks[] = 'WP_CLI\CheckContent\checks\\' . $class;
 			}
 		}
+		sort($checks);
 		return $checks;
 	}
 
@@ -140,6 +140,8 @@ class wpsite {
 
 			$_post = get_post($post->ID);
 			$_curr_urls = array();
+
+			\WP_CLI::debug( 'Checking post' . $post->ID  );
 
 			foreach($checks as $check) {
 
@@ -164,7 +166,7 @@ class wpsite {
 								)
 							),
 							'results' => $_result,
-							'category' => $check::category
+							'category' => $check::$category
 						);
 					}
 				}

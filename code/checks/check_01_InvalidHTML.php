@@ -11,22 +11,30 @@ use DOMDocument;
  *
  * @package WP_CLI\CheckContent\checks
  */
-class InvalidHTML extends checks_default implements checks {
+class check_01_InvalidHTML extends checks_default implements checks {
 
 	public static $category = 'danger';
 
 	static public function get_content($_post) {
 
-		$GLOBALS['post'] = $_post;
+		if ($_post instanceof \WP_Post) {
 
-		/**
-		 * Filter the post content.
-		 *
-		 * @since 0.71
-		 *
-		 * @param string $content Content of the current post.
-		 */
-		return str_replace( ']]>', ']]&gt;', apply_filters( 'the_content', $_post->post_content ) );
+			$GLOBALS['post'] = $_post;
+
+			/**
+			 * Filter the post content.
+			 *
+			 * @since 0.71
+			 *
+			 * @param string $content Content of the current post.
+			 */
+
+			return str_replace(']]>', ']]&gt;', apply_filters('the_content', $_post->post_content));
+		} else {
+			var_dump('not a post');
+			var_dump( $_post );
+			die();
+		}
 	}
 
 

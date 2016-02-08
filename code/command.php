@@ -5,6 +5,9 @@ namespace WP_CLI\CheckContent;
 use WP_CLI;
 use WP_CLI\CommandWithDBObject;
 
+//Required for catching errors in parsing HTML
+error_reporting(E_ALL);
+
 /**
  * Return information about the wordpress installation and environment.
  */
@@ -88,13 +91,17 @@ class command extends CommandWithDBObject {
 
 		foreach($results as $site_id => $site) {
 
+
 			// Output title of current site
 			$this->log($site);
+			WP_CLI::debug( 'Checking site ' . $site  );
 
 			$site->set_curr();
 
 			// Check for errors (invokes cache)
-			if ($site->has_errors()) {
+			$error_count = $site->has_errors();
+			if ($error_count) {
+				WP_CLI::debug( 'Site ' . $site . ' has ' . $error_count . 'errors' );
 				foreach( $site->errors as $errors ) {
 					if($errors) {
 						$this->table_log($errors);
@@ -102,6 +109,7 @@ class command extends CommandWithDBObject {
 				}
 			} else {
 				$this->f_panel( "Site is OK!" );
+				WP_CLI::debug( 'Site ' . $site . ' is OK!' );
 			}
 
 			$this->br();
@@ -130,9 +138,8 @@ class command extends CommandWithDBObject {
 					as $site
 				) {
 
-					$wpsite = new wpsite( $site["blog_id"], $site["site_id"], $ignore, $this->inHTML );
-
-					$sites[] = $wpsite;
+					$sites[ implode( "_", array($site["site_id"], $site["blog_id"]) ) ] =
+						new wpsite( $site["blog_id"], $site["site_id"], $ignore, $this->inHTML );
 
 				}
 			} else {
@@ -143,6 +150,7 @@ class command extends CommandWithDBObject {
 		} else {
 			$this->developer_prompt('Multisite content is currently only supported :(');
 		}
+
 		return $sites;
 	}
 
@@ -289,7 +297,6 @@ class command extends CommandWithDBObject {
 					$path = "p";
 			}
 			echo $this->f_enclosed($path, $label);
-			echo $this->f_enclosed($path, $value);
 
 		} else {
 			if ($value) {
